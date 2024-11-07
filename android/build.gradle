@@ -1,0 +1,162 @@
+
+buildscript {
+  repositories {
+    mavenCentral()
+    google()
+  }
+}
+
+plugins {
+  id "org.jetbrains.kotlin.plugin.compose" version "2.1.0-RC"
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+android {
+  namespace "com.gdx.scrollless"
+  compileSdk 34
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      java.setSrcDirs(['src/main/java', 'src/main/kotlin'])
+      aidl.setSrcDirs(['src/main/java', 'src/main/kotlin'])
+      renderscript.setSrcDirs(['src/main/java', 'src/main/kotlin'])
+      res.setSrcDirs(['res'])
+      assets.setSrcDirs(['../assets'])
+      jniLibs.setSrcDirs(['libs'])
+    }
+  }
+  packagingOptions {
+		resources {
+			excludes += ['META-INF/robovm/ios/robovm.xml', 'META-INF/DEPENDENCIES.txt', 'META-INF/DEPENDENCIES',
+                   'META-INF/dependencies.txt', '**/*.gwt.xml']
+			pickFirsts += ['META-INF/LICENSE.txt', 'META-INF/LICENSE', 'META-INF/license.txt', 'META-INF/LGPL2.1',
+                     'META-INF/NOTICE.txt', 'META-INF/NOTICE', 'META-INF/notice.txt']
+		}
+  }
+  defaultConfig {
+    applicationId 'com.gdx.scrollless'
+    minSdkVersion 21 //Was 19
+    targetSdkVersion 34
+    versionCode 1
+    versionName "1.0"
+    multiDexEnabled true
+  }
+  compileOptions {
+    sourceCompatibility "11"
+    targetCompatibility "11"
+    coreLibraryDesugaringEnabled true
+  }
+  buildTypes {
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  kotlinOptions {
+    jvmTarget = '11'
+  }
+  buildFeatures {
+    compose true
+  }
+
+  kotlin.compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+
+}
+
+repositories {
+  // needed for AAPT2, may be needed for other tools
+  google()
+  mavenCentral()
+}
+
+configurations { natives }
+
+dependencies {
+  implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+  implementation 'androidx.activity:activity-compose:1.8.0'
+  implementation platform('androidx.compose:compose-bom:2024.04.01')
+  implementation 'androidx.compose.ui:ui'
+  implementation 'androidx.compose.ui:ui-graphics'
+  implementation 'androidx.compose.ui:ui-tooling-preview'
+  implementation 'androidx.compose.material3:material3'
+  androidTestImplementation platform('androidx.compose:compose-bom:2024.04.01')
+  androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+  coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+  implementation "androidx.core:core:1.13.1"
+  implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+  implementation project(':core')
+  debugImplementation 'androidx.compose.ui:ui-tooling'
+  debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+  natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
+  natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
+  natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
+  natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
+  natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
+  natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
+  natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
+  natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
+  natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
+  natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+  natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
+  natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
+
+}
+
+// Called every time gradle gets executed, takes the native dependencies of
+// the natives configuration, and extracts them to the proper libs/ folders
+// so they get packed with the APK.
+tasks.register('copyAndroidNatives') {
+  doFirst {
+    file("libs/armeabi-v7a/").mkdirs()
+    file("libs/arm64-v8a/").mkdirs()
+    file("libs/x86_64/").mkdirs()
+    file("libs/x86/").mkdirs()
+
+    configurations.natives.copy().files.each { jar ->
+      def outputDir = null
+      if(jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
+      if(jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
+      if(jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
+      if(jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
+      if(outputDir != null) {
+        copy {
+          from zipTree(jar)
+          into outputDir
+          include "*.so"
+        }
+      }
+    }
+  }
+}
+
+tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") }.configureEach { packageTask ->
+  packageTask.dependsOn 'copyAndroidNatives'
+}
+
+tasks.register('run', Exec) {
+  def path
+  def localProperties = project.file("../local.properties")
+  if (localProperties.exists()) {
+    Properties properties = new Properties()
+    localProperties.withInputStream { instr ->
+      properties.load(instr)
+    }
+    def sdkDir = properties.getProperty('sdk.dir')
+    if (sdkDir) {
+      path = sdkDir
+    } else {
+      path = "$System.env.ANDROID_SDK_ROOT"
+    }
+  } else {
+    path = "$System.env.ANDROID_SDK_ROOT"
+  }
+
+  def adb = path + "/platform-tools/adb"
+  commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.gdx.scrollless/com.gdx.scrollless.android.AndroidLauncher'
+}
+
+eclipse.project.name = appName + "-android"

@@ -53,7 +53,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
 
     private var appSettingPanelWidth : Int = 250;
     private var appSettingPanelHeight : Int = 58;
-    private var numberAppsToShow : Int = 9;
+    private var numberAppsToShow : Int = 8;
     private var appSettingPanelScrollWidth : Int = appSettingPanelWidth;
     private var appSettingPanelScrollHeight : Int = appSettingPanelHeight * numberAppsToShow;
     //
@@ -113,7 +113,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
             Text(
                 text = "ScrollLess",
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontSize = 30.sp
             )
@@ -133,7 +133,8 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     content = { Text("Add Alarm") },
-                    onClick = { onAddAlarmBtnClicked() }
+                    onClick = { onAddAlarmBtnClicked() },
+                    modifier = Modifier.offset(0.dp, -20.dp)
                 )
             }
         ) { innerPadding ->
@@ -145,7 +146,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
                     .fillMaxSize()
                     .border(BorderStroke(1.dp, Color.Black))
                 Image(painter = painterResource(R.drawable.background_02), contentDescription = "Background Image",
-                    contentScale = ContentScale.Fit, modifier = imageModifier)
+                    contentScale = ContentScale.FillBounds, modifier = imageModifier)
                 content()
             }
         }
@@ -201,7 +202,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
     @Composable
     fun BackgroundImg() {
         val imageModifier = Modifier
-            .size(1000.dp)
+            .fillMaxSize() //size(1000.dp)
             .border(BorderStroke(1.dp, Color.Black))
         Image(
             painter = painterResource(R.drawable.background_01),

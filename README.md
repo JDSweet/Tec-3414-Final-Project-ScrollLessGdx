@@ -1,8 +1,10 @@
-# YourProjectName
+# ScrollLess
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff). This project was generated with a Kotlin project template that includes Kotlin application launchers and [KTX](https://libktx.github.io/) utilities.
 
-This project was generated with a Kotlin project template that includes Kotlin application launchers and [KTX](https://libktx.github.io/) utilities.
+This repository is a fork of https://github.com/breydonb/TEC-3414-Final-Project
+
+ScrollLess is a mobile Android application (with potential future support for IOS through integration with RoboVM) developed to reduce screen time by blocking problematic apps behind a mini-game or puzzle after your screen time with those apps is exceeded.
 
 ## Platforms
 

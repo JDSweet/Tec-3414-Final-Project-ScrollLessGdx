@@ -1,4 +1,4 @@
-package com.gdx.scrollless.android
+package com.gdx.scrollless.android.launcher
 
 import android.os.Bundle
 

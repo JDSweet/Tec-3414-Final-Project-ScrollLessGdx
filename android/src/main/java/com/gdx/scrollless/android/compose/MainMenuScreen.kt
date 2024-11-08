@@ -1,29 +1,24 @@
 package com.gdx.scrollless.android.compose
 
+import android.R.attr.value
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gdx.scrollless.R
+import com.gdx.scrollless.android.launcher.AndroidLauncher
+
 
 // From Dustin: This syntax looks weird, but it's basically just syntactic Kotlin sugar.
 // Kotlin classes have one or more constructors (one primary,
@@ -69,9 +66,15 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
     override fun BuildScreen() {
         BackgroundScaffolding {
             LogoBox()
-            Box(modifier = Modifier.fillMaxSize().offset(0.dp, 80.dp))
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .offset(0.dp, 80.dp))
             {
-                Column(modifier = Modifier.align(Alignment.Center).width(appSettingPanelScrollWidth.dp).height(appSettingPanelScrollHeight.dp).verticalScroll(rememberScrollState()))
+                Column(modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(appSettingPanelScrollWidth.dp)
+                    .height(appSettingPanelScrollHeight.dp)
+                    .verticalScroll(rememberScrollState()))
                 {
                     for(i in 0..appCount)
                     {
@@ -93,7 +96,10 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
     @Composable
     fun ColoredBackgroundBox(content : @Composable () -> Unit, innerBorderColor : Color, backgroundColor : Color, width : Int, height : Int)
     {
-        Box(modifier = Modifier.size(width.dp, height.dp).background(backgroundColor).border(BorderStroke(2.dp, SolidColor(innerBorderColor))))
+        Box(modifier = Modifier
+            .size(width.dp, height.dp)
+            .background(backgroundColor)
+            .border(BorderStroke(2.dp, SolidColor(innerBorderColor))))
         {
             content();
         }
@@ -127,13 +133,17 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     content = { Text("Add Alarm") },
-                    onClick = { addAlarm() }
+                    onClick = { onAddAlarmBtnClicked() }
                 )
             }
         ) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize())
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize())
             {
-                val imageModifier = Modifier.fillMaxSize().border(BorderStroke(1.dp, Color.Black))
+                val imageModifier = Modifier
+                    .fillMaxSize()
+                    .border(BorderStroke(1.dp, Color.Black))
                 Image(painter = painterResource(R.drawable.background_02), contentDescription = "Background Image",
                     contentScale = ContentScale.Fit, modifier = imageModifier)
                 content()
@@ -153,7 +163,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
         {
             BackgroundImg()
             TitleLogoBox()
-            AddAlarmBtn()
+            //AddAlarmBtn()
         }
     }
 
@@ -172,12 +182,12 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
         }
     }
 
-    @Composable
+/*    @Composable
     fun AddAlarmBtn() {
         Box(modifier = Modifier.offset(300.dp, 780.dp))
         {
             TextButton(
-                onClick = { addAlarm() },
+                onClick = { onAddAlarmBtnClicked() },
                 colors = ButtonDefaults.buttonColors(contentColor = Color.Yellow)
             )
             {
@@ -185,6 +195,7 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
             }
         }
     }
+ */
 
     //The background image is placed in the background box.
     @Composable
@@ -200,8 +211,11 @@ class MainMenuScreen (app : ScrollLess) : AppScreen
         )
     }
 
-    fun addAlarm()
+    fun onAddAlarmBtnClicked()
     {
         //app.setScreen(app.loadingScreen)
+        val myIntent: Intent = Intent(app, AndroidLauncher::class.java)
+        myIntent.putExtra("minigame_launch_param", value) //Optional parameters
+        app.startActivity(myIntent)
     }
 }

@@ -25,5 +25,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--Add Other activities like this-->
+        <activity android:name="com.gdx.scrollless.android.launcher.AndroidLauncher"
+                  android:exported = "false">
+            <!--Default Intent Filter-->
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

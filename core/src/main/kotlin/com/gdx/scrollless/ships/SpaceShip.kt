@@ -37,10 +37,16 @@ abstract class SpaceShip(tex: Texture, game: MiniGame)
                         position.y + sprite.height)
     }
 
+    public fun getPos() : Vector2
+    {
+        return this.position;
+    }
+
     public abstract fun updateLogic();
 
     public fun drawShip(batch: SpriteBatch)
     {
+        sprite.setSize(10f, 10f)
         sprite.draw(batch)
     }
 

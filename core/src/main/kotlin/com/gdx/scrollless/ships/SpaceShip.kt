@@ -1,15 +1,14 @@
 package com.gdx.scrollless.ships
 
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.gdx.scrollless.MiniGame
-import ktx.assets.toInternalFile
 
-abstract class SpaceShip (texturePath : String, game : MiniGame)
+abstract class SpaceShip(tex: Texture, game: MiniGame)
 {
     protected var game : MiniGame;
     protected var sprite : Sprite;
@@ -18,7 +17,7 @@ abstract class SpaceShip (texturePath : String, game : MiniGame)
 
     init {
         this.game = game;
-        this.sprite = Sprite(Texture(texturePath.toInternalFile()));
+        this.sprite = Sprite(TextureRegion(tex));
         this.position = Vector2();
         collisionBox = Rectangle();
     }
@@ -54,12 +53,17 @@ abstract class SpaceShip (texturePath : String, game : MiniGame)
     //Moves the ship to the right by the specified amount.
     public fun moveRight(amnt : Float)
     {
-        position.y += amnt;
+        position.x -= amnt;
     }
 
     //Fires the ship's main weapon in the given direction.
     public fun shoot()
     {
 
+    }
+
+    public fun setPos(x : Float, y : Float)
+    {
+        this.position.set(x, y);
     }
 }

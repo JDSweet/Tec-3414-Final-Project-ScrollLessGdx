@@ -1,6 +1,13 @@
 package com.gdx.scrollless.ships
 
-class BulletShip
+import com.badlogic.gdx.graphics.Texture
+import com.gdx.scrollless.MiniGame
+
+class BulletShip(tex: Texture, game: MiniGame) : SpaceShip(tex, game)
 {
+    override fun updateLogic()
+    {
+
+    }
 
 }

@@ -14,11 +14,13 @@ abstract class SpaceShip(tex: Texture, game: MiniGame)
     protected var sprite : Sprite;
     protected var position : Vector2;
     protected var collisionBox : Rectangle;
+    protected var rotation : Float;
 
     init {
         this.game = game;
         this.sprite = Sprite(TextureRegion(tex));
         this.position = Vector2();
+        this.rotation = 0f;
         collisionBox = Rectangle();
     }
 
@@ -32,6 +34,8 @@ abstract class SpaceShip(tex: Texture, game: MiniGame)
     public fun updatePos()
     {
         this.sprite.setPosition(position.x, position.y);
+        this.sprite.setOrigin(sprite.width/2f, sprite.height/2f);
+        sprite.rotation = rotation;
         this.collisionBox.set(position.x, position.y,
                         position.x + sprite.width,
                         position.y + sprite.height)

@@ -1,6 +1,8 @@
 package com.gdx.scrollless.screens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
@@ -8,6 +10,8 @@ import com.gdx.scrollless.Constants
 import com.gdx.scrollless.MiniGame
 import com.gdx.scrollless.ships.InvaderShip
 import com.gdx.scrollless.ships.PlayerShip
+import ktx.app.clearScreen
+import java.awt.Color
 
 class GameScreen (private var game : MiniGame) : Screen
 {
@@ -32,11 +36,11 @@ class GameScreen (private var game : MiniGame) : Screen
         batch = SpriteBatch();
         camera = OrthographicCamera(worldBounds.width, worldBounds.height);
 
-        playerShip = PlayerShip(game.getPlayerShipTexture(), game);
-        invaderShip = InvaderShip(game.getInvaderShipTexture(), game);
+        playerShip = PlayerShip(game.getPlayerShipTexture(), this);
+        invaderShip = InvaderShip(game.getInvaderShipTexture(), this);
 
         playerShip.setPos(playerHalfOfScreen.x, playerHalfOfScreen.y);
-        invaderShip.setPos(enemyHalfOfScreen.x + enemyHalfOfScreen.width - Constants.SHIP_RENDER_WIDTH, enemyHalfOfScreen.y + enemyHalfOfScreen.height - Constants.SHIP_RENDER_HEIGHT);
+        invaderShip.setPos((enemyHalfOfScreen.x + enemyHalfOfScreen.width)/2f - Constants.SHIP_RENDER_WIDTH, enemyHalfOfScreen.y + enemyHalfOfScreen.height - Constants.SHIP_RENDER_HEIGHT);
 
         game.addShip(playerShip);
         game.addShip(invaderShip);
@@ -44,6 +48,8 @@ class GameScreen (private var game : MiniGame) : Screen
 
     override fun render(delta: Float)
     {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         camera.position.set(50f, 50f, 0f)
         camera.update();
         batch.setProjectionMatrix(camera.combined);

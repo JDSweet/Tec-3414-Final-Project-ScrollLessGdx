@@ -52,8 +52,8 @@ class ScrollLess : ComponentActivity()
 
 
         enableEdgeToEdge()
-        //setScreen(mainMenuScreen)
-        setScreen(addAlarmScreen)
+        setScreen(mainMenuScreen)
+        //setScreen(addAlarmScreen)
     }
 
     // This will eventually be updated to use a NavController

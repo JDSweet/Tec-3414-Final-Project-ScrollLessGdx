@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.gdx.scrollless.Constants
 import com.gdx.scrollless.MiniGame
+import com.gdx.scrollless.ships.BulletShip
 import com.gdx.scrollless.ships.InvaderShip
 import com.gdx.scrollless.ships.PlayerShip
 import ktx.app.clearScreen
 import java.awt.Color
+import java.util.Stack
+import com.badlogic.gdx.utils.Array;
 
 class GameScreen (private var game : MiniGame) : Screen
 {
@@ -24,6 +27,10 @@ class GameScreen (private var game : MiniGame) : Screen
 
     private lateinit var playerShip : PlayerShip;
     private lateinit var invaderShip : InvaderShip;
+
+    private lateinit var playerBullets : Array<BulletShip>;
+    private lateinit var invaderBullets : Array<BulletShip>;
+
 
     override fun show()
     {
@@ -42,6 +49,9 @@ class GameScreen (private var game : MiniGame) : Screen
         playerShip.setPos(playerHalfOfScreen.x, playerHalfOfScreen.y);
         invaderShip.setPos((enemyHalfOfScreen.x + enemyHalfOfScreen.width)/2f - Constants.SHIP_RENDER_WIDTH, enemyHalfOfScreen.y + enemyHalfOfScreen.height - Constants.SHIP_RENDER_HEIGHT);
 
+        playerBullets = Array<BulletShip>();
+        invaderBullets = Array<BulletShip>();
+
         game.addShip(playerShip);
         game.addShip(invaderShip);
     }
@@ -58,8 +68,61 @@ class GameScreen (private var game : MiniGame) : Screen
             it.updateLogic();
             it.updatePos();
             it.drawShip(batch);
+            if(it is BulletShip)
+            {
+                if(!it.isAlive())
+                    removeBullet(it);
+//                    if(!it.isInverted())
+//                        this.playerBullets.add(it);
+//                    else
+//                        this.invaderBullets.add(it);
+                else
+                    checkForAndHandleBulletCollisionsWithShips(it);
+            }
         }
         batch.end();
+    }
+
+    private fun removeBullet(bullet : BulletShip)
+    {
+        game.removeShip(bullet);
+        if(playerBullets.contains(bullet))
+            playerBullets.removeValue(bullet, true);
+        else if(invaderBullets.contains(bullet))
+            invaderBullets.removeValue(bullet, true);
+    }
+
+    public fun addPlayerBullet(bullet: BulletShip)
+    {
+        this.playerBullets.add(bullet);
+    }
+
+    public fun addInvaderBullet(bullet: BulletShip)
+    {
+        this.invaderBullets.add(bullet);
+    }
+
+    public fun checkForAndHandleBulletCollisionsWithShips(bullet : BulletShip)
+    {
+        for(i in 0 until game.getShips().size)
+        {
+            var it = game.getShips().get(i);
+            if(it !is BulletShip)
+            {
+                if(it.collidesWith(bullet))
+                {
+                    if(bullet.isInverted() && it !is InvaderShip)
+                        it.kill();
+                    else if(!bullet.isInverted() && it !is PlayerShip)
+                        bullet.kill();
+                }
+            }
+        }
+    }
+
+    public fun getGame() : MiniGame
+    {
+        return this.game;
     }
 
     override fun resize(width: Int, height: Int)
